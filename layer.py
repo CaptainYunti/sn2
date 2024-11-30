@@ -11,32 +11,34 @@ class Layer:
         
 
     def forward(self, layer_input) -> np.ndarray:
-        layer_input = np.vstack(np.array([1]), layer_input)
-        output_arg = self.weights*layer_input
-
-        return self.elu(output_arg)
-    
-
-    def backward(self, output) -> None:
-        matrix = self.weights.T*self.d_elu()
-        self.weights -= self.d_elu() * self.learning_rate
-    
-
-    
-    def elu(self, matrix) -> np.ndarray:
-        if matrix <= 0:
-            matrix = np.exp(matrix) - 1
+        self.layer_input = np.vstack(np.array([1]), layer_input)
+        self.net = self.weights.dot(self.layer_input)
         
-        return matrix
+        return self.elu(self.net)
     
 
-    def d_elu(self, matrix) -> np.ndarray:
-        if matrix > 0:
-            matrix = 1
-        else:
-            matrix = np.exp(matrix)
+    def backward(self, der_loss) -> np.ndarray:
+        self.delta = der_loss * self.d_elu(self.net_matrix)
+        self.weights -= self.learning_rate * self.delta.dot(self.layer_input.t)
 
-        return matrix
+        return der_loss[1:]
+    
+
+    
+    def elu(self, x) -> np.ndarray:
+        if x <= 0:
+            x = np.exp(x) - 1
+        
+        return x
+    
+
+    def d_elu(self, x) -> np.ndarray:
+        if x > 0:
+            y = 1
+        else:
+            y = np.exp(x)
+
+        return y
     
 
 
