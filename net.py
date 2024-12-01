@@ -52,7 +52,7 @@ class Net:
 
 
 
-    def predict(self, sample) -> np.ndarray:
+    def predict(self, sample) -> int:
         input, self.expected_output = sample
         for layer in self.layers:
             output = layer.forward(input)
