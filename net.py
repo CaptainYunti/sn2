@@ -1,6 +1,7 @@
 import numpy as np
 from layer import Layer
 from tqdm import tqdm
+import random
 
 class Net:
     def __init__(self, vec_number_neurons, number_layers=None, number_epoch=10, learning_rate=0.001, soft_max=False, mini_batch=False):
@@ -20,7 +21,7 @@ class Net:
             pass
             
 
-    def fit(self, data, number_epoch=None, learning_rate=None, validation_data = None):
+    def fit(self, data, number_epoch=None, learning_rate=None, validation_data = None, mini_batch_size = 64):
         if learning_rate is not None:
             for layer in self.layers:
                 self.change_learning_rate(layer, learning_rate)
@@ -28,17 +29,15 @@ class Net:
         if number_epoch is not None:
             self.number_epoch = number_epoch
 
-        if not self.mini_batch:
-            self.stochastic_learn(data, validation_data)
+        if self.mini_batch: #not working
+            self.mini_batch_learn(data=data, validation_data=validation_data, mini_batch_size=mini_batch_size)
 
         else:
-            pass
-
+            self.stochastic_learn(data, validation_data)
 
     def test(self, data):
         good_predictions = 0
-        if len(data) < 1:
-            print("Duuuuuupaaaa!!!")           
+        if len(data) < 1:       
             return
 
         for sample in tqdm(data, desc=f"Testing: "):
@@ -69,7 +68,7 @@ class Net:
         layer.change_learning_rate(new_rate)
 
 
-    def stochastic_learn(self, data, validation_data):
+    def stochastic_learn(self, data:list|tuple, validation_data:tuple):
  
         print("Stochastic learn:")
         for epoch in range(self.number_epoch):
@@ -90,8 +89,34 @@ class Net:
                 self.test(validation_data)
             print('')
 
+        print("End")
 
 
+    #in progress ...
+    def mini_batch_learn(self, data:list|tuple, mini_batch_size, validation_data:tuple):
+        if isinstance(data, tuple):
+            data = list(data)
+
+        print("Mini-Batch:")
+        for epoch in range(self.number_epoch):
+            output = None
+            random.shuffle(data)
+            mini_batch_index = 0
+
+            for sample in tqdm(data, desc=f"Epoch {epoch+1}"):
+                input, expected_output = sample
+                for layer in self.layers:
+                    output = layer.forward(input)
+                    input = output
+
+                loss_derivative = output - expected_output
+                for i in range(self.number_layers-2, 0, -1):
+                    loss_derivative = self.layers[i].backward(loss_derivative)
+
+            print('')
+            if validation_data is not None:
+                self.test(validation_data)
+            print('')
         print("End")
 
             
