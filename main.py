@@ -9,7 +9,7 @@ if __name__ == "__main__":
     
     #network = Net([784, 512, 256, 128, 10])
     #network = Net([784, 256, 128, 10], learning_rate=0.001)
-    network = Net([784, 512, 256, 10], learning_rate=0.001, number_epoch=10)
+    network = Net([784, 512, 256, 10], learning_rate=0.001, number_epoch=20)
 
     network.fit(tuple(training_data), validation_data=tuple(validation_data))
 

@@ -3,7 +3,7 @@ from layer import Layer
 from tqdm import tqdm
 
 class Net:
-    def __init__(self, vec_number_neurons, number_layers=None, number_epoch=10, learning_rate=0.1, soft_max=False, mini_batch=False):
+    def __init__(self, vec_number_neurons, number_layers=None, number_epoch=10, learning_rate=0.001, soft_max=False, mini_batch=False):
         self.number_layers = number_layers if number_layers is not None else len(vec_number_neurons)
         self.vec_number_neurons = vec_number_neurons
         self.number_epoch = number_epoch
